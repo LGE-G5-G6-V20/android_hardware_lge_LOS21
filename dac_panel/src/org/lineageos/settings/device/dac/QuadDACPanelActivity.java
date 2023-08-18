@@ -3,8 +3,6 @@ package org.lineageos.settings.device.dac;
 import android.os.Bundle;
 import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 public class QuadDACPanelActivity extends CollapsingToolbarBaseActivity {
 
     @Override

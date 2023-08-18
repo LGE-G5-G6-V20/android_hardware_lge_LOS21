@@ -5,59 +5,52 @@
     android:title="@strings/quad_dac">
 
     <SwitchPreference
-        app:key="quaddac_switch"
-        app:summaryOn="@string/quad_dac_on"
-        app:summaryOff="@string/quad_dac_off"
-        app:title="@string/quad_dac"
-        app:isPreferenceVisible="false" />
+        android:key="quaddac_switch"
+        android:summaryOn="@string/quad_dac_on"
+        android:summaryOff="@string/quad_dac_off"
+        android:title="@string/quad_dac" />
 
     <PreferenceCategory
-        app:title="@string/quad_dac_settings" >
+        android:title="@string/quad_dac_settings" >
 
         <ListPreference
-            app:key="hifi_mode_dropdown"
-            app:title="@string/hifi_mode"
-            app:summary="%s"
-            app:entries="@array/hifi_mode_entry_values"
-            app:entryValues="@array/hifi_mode_entry_values"
-            app:isPreferenceVisible="false" />
+            android:key="hifi_mode_dropdown"
+            android:title="@string/hifi_mode"
+            android:summary="%s"
+            android:entries="@array/hifi_mode_entry_values"
+            android:entryValues="@array/hifi_mode_entry_values" />
 
         <SeekBarPreference
-            app:key="avc_volume_seekbar"
-            app:title="@string/avc_volume"
-            app:summary="@string/avc_volume_summary"
-            app:showSeekBarValue="true"
-            app:min="-24"
+            android:key="avc_volume_seekbar"
+            android:title="@string/avc_volume"
+            android:summary="@string/avc_volume_summary"
+            asp:min="-24"
             android:max="0"
-            app:defaultValue="-14"
-            app:isPreferenceVisible="false" />
+            android:defaultValue="-14" />
 
         <ListPreference
-            app:key="sound_preset_dropdown"
-            app:title="@string/sound_preset"
-            app:summary="%s"
-            app:entries="@array/sound_preset_entry_values"
-            app:entryValues="@array/sound_preset_entry_values"
-            app:isPreferenceVisible="false" />
+            android:key="sound_preset_dropdown"
+            android:title="@string/sound_preset"
+            android:summary="%s"
+            android:entries="@array/sound_preset_entry_values"
+            android:entryValues="@array/sound_preset_entry_values" />
 
         <ListPreference
-            app:key="digital_filter_dropdown"
-            app:title="@string/digital_filter"
-            app:summary="%s"
-            app:entries="@array/digital_filter_entry_values"
-            app:entryValues="@array/digital_filter_entry_values"
-            app:isPreferenceVisible="false" />
+            android:key="digital_filter_dropdown"
+            android:title="@string/digital_filter"
+            android:summary="%s"
+            android:entries="@array/digital_filter_entry_values"
+            android:entryValues="@array/digital_filter_entry_values" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:title="@string/quad_dac_balance" >
+        android:title="@string/quad_dac_balance" >
 
         <org.lineageos.settings.device.dac.ui.BalancePreference
-            app:key="balance"
-            app:summary="@string/quad_dac_balance_summary"
-            app:title=""
-            app:isPreferenceVisible="false" />
+            android:key="balance"
+            android:summary="@string/quad_dac_balance_summary"
+            android:title="" />
 
     </PreferenceCategory>
 

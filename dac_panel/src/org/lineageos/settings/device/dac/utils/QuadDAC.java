@@ -1,16 +1,10 @@
 package org.lineageos.settings.device.dac.utils;
 
 import android.media.AudioSystem;
-import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.util.Log;
 
 import org.lineageos.hardware.util.FileUtils;
-
-import vendor.lge.hardware.audio.dac.control.V1_0.AdvancedFeature;
-import vendor.lge.hardware.audio.dac.control.V1_0.HalFeature;
-import vendor.lge.hardware.audio.dac.control.V1_0.IDacAdvancedControl;
-import vendor.lge.hardware.audio.dac.control.V1_0.IDacHalControl;
 
 public class QuadDAC {
 
@@ -18,93 +12,134 @@ public class QuadDAC {
 
     private QuadDAC() {}
 
-    public static void enable(IDacHalControl dhc, IDacAdvancedControl dac)
+    public static void enable()
     {
-        try {
-            int digital_filter = getDigitalFilter(dhc);
-            int sound_preset = getSoundPreset(dhc);
-            int left_balance = getLeftBalance(dhc);
-            int right_balance = getRightBalance(dhc);
-            int mode = getDACMode(dac);
-            int avc_vol = getAVCVolume(dac);
-            dhc.setFeatureValue(HalFeature.QuadDAC, 1);
-            setDACMode(dac, mode);
-            setLeftBalance(dhc, left_balance);
-            setRightBalance(dhc, right_balance);
-            setDigitalFilter(dhc, digital_filter);
-            setSoundPreset(dhc, sound_preset);
-            setAVCVolume(dac, avc_vol);
-        } catch(Exception e) {}
+        int digital_filter = getDigitalFilter();
+        int sound_preset = getSoundPreset();
+        int left_balance = getLeftBalance();
+        int right_balance = getRightBalance();
+        int mode = getDACMode();
+        int avc_vol = getAVCVolume();
+        AudioSystem.setParameters(Constants.SET_DAC_ON_COMMAND);
+        setDACMode(mode);
+        setLeftBalance(left_balance);
+        setRightBalance(right_balance);
+        setDigitalFilter(digital_filter);
+        setSoundPreset(sound_preset);
+        setAVCVolume(avc_vol);
     }
 
-    public static void disable(IDacHalControl dhc) throws RemoteException
+    public static void disable()
     {
-        dhc.setFeatureValue(HalFeature.QuadDAC, 0);
+        AudioSystem.setParameters(Constants.SET_DAC_OFF_COMMAND);
     }
 
-    public static void setDACMode(IDacAdvancedControl dac, int mode) throws RemoteException
+    public static void setHifiDACdop(int dop)
     {
-        dac.setFeatureValue(AdvancedFeature.HifiMode, mode);
+        AudioSystem.setParameters(Constants.SET_HIFI_DAC_DOP_COMMAND + dop);
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_DOP, Integer.toString(dop));
     }
 
-    public static int getDACMode(IDacAdvancedControl dac) throws RemoteException
+    public static int getHifiDACdop()
     {
-        return dac.getFeatureValue(AdvancedFeature.HifiMode);
+        return SystemProperties.getInt(Constants.PROPERTY_HIFI_DAC_DOP, 0);
     }
 
-    public static void setAVCVolume(IDacAdvancedControl dac, int avc_volume) throws RemoteException
+    public static void setDACMode(int mode)
     {
-        dac.setFeatureValue(AdvancedFeature.AVCVolume, avc_volume);
+        switch(mode)
+        {
+        case 0:
+            FileUtils.writeLine(Constants.HEADSET_TYPE_SYSFS, "normal");
+            break;
+        case 1:
+            FileUtils.writeLine(Constants.HEADSET_TYPE_SYSFS, "hifi");
+            break;
+        case 2:
+            FileUtils.writeLine(Constants.HEADSET_TYPE_SYSFS, "aux");
+            break;
+        default: 
+            return;
+        }
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_MODE, Integer.toString(mode));
     }
 
-    public static int getAVCVolume(IDacAdvancedControl dac) throws RemoteException
+    public static int getDACMode()
     {
-        return dac.getFeatureValue(AdvancedFeature.AVCVolume);
+        return SystemProperties.getInt(Constants.PROPERTY_HIFI_DAC_MODE, 0);
     }
 
-    public static void setDigitalFilter(IDacHalControl dhc, int filter) throws RemoteException
+    public static void setAVCVolume(int avc_volume)
     {
-        dhc.setFeatureValue(HalFeature.DigitalFilter, filter);
+        FileUtils.writeLine(Constants.AVC_VOLUME_SYSFS, (avc_volume * -1) + "");
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_AVC_VOLUME, Integer.toString(avc_volume));
     }
 
-    public static int getDigitalFilter(IDacHalControl dhc) throws RemoteException
+    public static int getAVCVolume()
     {
-        return dhc.getFeatureValue(HalFeature.DigitalFilter);
+        return SystemProperties.getInt(Constants.PROPERTY_HIFI_DAC_AVC_VOLUME, 0);
     }
 
-    public static void setSoundPreset(IDacHalControl dhc, int preset) throws RemoteException
+    public static void setMasterVolume(int master_volume)
     {
-        dhc.setFeatureValue(HalFeature.SoundPreset, preset);
+        FileUtils.writeLine(Constants.MASTER_VOLUME_SYSFS, (master_volume * -1) + "");
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_MASTER_VOLUME, Integer.toString(master_volume));
     }
 
-    public static int getSoundPreset(IDacHalControl dhc) throws RemoteException
+    public static int getMasterVolume()
     {
-        return dhc.getFeatureValue(HalFeature.SoundPreset);
+        return SystemProperties.getInt(Constants.PROPERTY_HIFI_DAC_MASTER_VOLUME, 0);
     }
 
-    public static void setLeftBalance(IDacHalControl dhc, int balance) throws RemoteException
+    public static void setDigitalFilter(int filter)
     {
-        dhc.setFeatureValue(HalFeature.BalanceLeft, balance);
+        AudioSystem.setParameters(Constants.SET_DIGITAL_FILTER_COMMAND + filter);
+        //FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
+        SystemProperties.set(Constants.PROPERTY_DIGITAL_FILTER, Integer.toString(filter));
     }
 
-    public static int getLeftBalance(IDacHalControl dhc) throws RemoteException
+    public static int getDigitalFilter()
     {
-        return dhc.getFeatureValue(HalFeature.BalanceLeft);
+        return SystemProperties.getInt(Constants.PROPERTY_DIGITAL_FILTER, 0);
     }
 
-    public static void setRightBalance(IDacHalControl dhc, int balance) throws RemoteException
+    public static void setSoundPreset(int preset)
     {
-        dhc.setFeatureValue(HalFeature.BalanceRight, balance);
+        AudioSystem.setParameters(Constants.SET_SOUND_PRESET_COMMAND + preset);
+        SystemProperties.set(Constants.PROPERTY_SOUND_PRESET, Integer.toString(preset));
     }
 
-    public static int getRightBalance(IDacHalControl dhc) throws RemoteException
+    public static int getSoundPreset()
     {
-        return dhc.getFeatureValue(HalFeature.BalanceRight);
+        return SystemProperties.getInt(Constants.PROPERTY_SOUND_PRESET, 0);
     }
 
-    public static boolean isEnabled(IDacHalControl dhc) throws RemoteException
+    public static void setLeftBalance(int balance)
     {
-        return dhc.getFeatureValue(HalFeature.QuadDAC) == 1;
+        AudioSystem.setParameters(Constants.SET_LEFT_BALANCE_COMMAND + balance);
+        SystemProperties.set(Constants.PROPERTY_LEFT_BALANCE, Integer.toString(balance));
+    }
+
+    public static int getLeftBalance()
+    {
+        return SystemProperties.getInt(Constants.PROPERTY_LEFT_BALANCE, 0);
+    }
+
+    public static void setRightBalance(int balance)
+    {
+        AudioSystem.setParameters(Constants.SET_RIGHT_BALANCE_COMMAND + balance);
+        SystemProperties.set(Constants.PROPERTY_RIGHT_BALANCE, Integer.toString(balance));
+    }
+
+    public static int getRightBalance()
+    {
+        return SystemProperties.getInt(Constants.PROPERTY_RIGHT_BALANCE, 0);
+    }
+
+    public static boolean isEnabled()
+    {
+        String hifi_dac = SystemProperties.get(Constants.PROPERTY_HIFI_DAC_ENABLED);
+        return hifi_dac.equals("ON");
     }
 
 }

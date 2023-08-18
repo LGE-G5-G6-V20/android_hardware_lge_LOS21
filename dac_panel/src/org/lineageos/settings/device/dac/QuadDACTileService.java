@@ -11,32 +11,24 @@ import android.util.Log;
 
 import org.lineageos.settings.device.dac.utils.QuadDAC;
 
-import vendor.lge.hardware.audio.dac.control.V1_0.IDacAdvancedControl;
-import vendor.lge.hardware.audio.dac.control.V1_0.IDacHalControl;
-
 public class QuadDACTileService extends TileService {
 
     private final static String TAG = "QuadDACTileService";
 
     private HeadsetPluggedTileReceiver headsetPluggedTileReceiver = new HeadsetPluggedTileReceiver();
 
-    private IDacAdvancedControl dac;
-    private IDacHalControl dhc;
-
-    private boolean dac_service_available = false;
-
     @Override
     public void onClick() {
         super.onClick();
-        try {
-            if (QuadDAC.isEnabled(dhc)) {
-                QuadDAC.disable(dhc);
-                setTileInactive();
-            } else {
-                QuadDAC.enable(dhc, dac);
-                setTileActive();
-            }
-        } catch(Exception e) {}
+
+        if(QuadDAC.isEnabled())
+        {
+            QuadDAC.disable();
+            setTileInactive();
+        } else {
+            QuadDAC.enable();
+            setTileActive();
+        }
     }
 
     @Override
@@ -48,29 +40,18 @@ public class QuadDACTileService extends TileService {
 
         AudioManager am = getSystemService(AudioManager.class);
 
-        try {
-            dac = IDacAdvancedControl.getService(true);
-            dhc = IDacHalControl.getService(true);
-            dac_service_available = true;
-        } catch(Exception e)
-        { }
-
         if(!am.isWiredHeadsetOn())
         {
             setTileUnavailable();
 	    return;
         }
-
-        try {
-            if (QuadDAC.isEnabled(dhc)) {
-                setTileActive();
-            } else {
-                setTileInactive();
-            }
-        } catch(Exception e) {}
-        if(!dac_service_available) {
-            setTileUnavailable();
-        }
+	
+	if(QuadDAC.isEnabled())
+	{
+	    setTileActive();
+	} else {
+	    setTileInactive();
+	}
     }
 
     @Override
@@ -114,13 +95,12 @@ public class QuadDACTileService extends TileService {
                 switch(state)
                 {
                     case 1: // Headset plugged in
-                        try {
-                            if (QuadDAC.isEnabled(dhc)) {
-                                setTileActive();
-                            } else {
-                                setTileInactive();
-                            }
-                        } catch(Exception e) {}
+                        if(QuadDAC.isEnabled())
+                        {
+                            setTileActive();
+                        } else {
+                            setTileInactive();
+                        }
                         break;
                     case 0: // Headset unplugged
                         setTileUnavailable();
