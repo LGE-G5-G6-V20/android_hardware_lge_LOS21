@@ -4363,7 +4363,7 @@ snd_device_t platform_get_output_snd_device(void *platform, struct stream_out *o
                 snd_device = SND_DEVICE_OUT_HEADPHONES_44_1;
         } else if (out->format == AUDIO_FORMAT_DSD) {
                 snd_device = SND_DEVICE_OUT_HEADPHONES_DSD;
-        } else if(((property_get_bool("persist.audio.hifi.enabled",false) == true)) && (ESS_HIFI_SUPPORT == true)){
+        } else if(((property_get_bool("persist.audio.hifi.normal",false) == true)) && (ESS_HIFI_SUPPORT == true)){
         	if(property_get_bool("persist.audio.hifi.advanced",false) == true){
         	snd_device = SND_DEVICE_OUT_HEADPHONES_HIFI_DAC_ADVANCED;
         	} else {
