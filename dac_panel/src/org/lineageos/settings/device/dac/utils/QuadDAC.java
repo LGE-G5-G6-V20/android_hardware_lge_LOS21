@@ -20,7 +20,7 @@ public class QuadDAC {
         int right_balance = getRightBalance();
         int mode = getDACMode();
         int avc_vol = getAVCVolume();
-        AudioSystem.setParameters(Constants.SET_DAC_ON_COMMAND);
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_ENABLED, "true");
         setDACMode(mode);
         setLeftBalance(left_balance);
         setRightBalance(right_balance);
@@ -31,7 +31,7 @@ public class QuadDAC {
 
     public static void disable()
     {
-        AudioSystem.setParameters(Constants.SET_DAC_OFF_COMMAND);
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_ENABLED, "false");
     }
 
     public static void setHifiDACdop(int dop)

@@ -40,13 +40,6 @@
                 android:value="@string/summary_empty" />
         </activity>
 
-        <receiver android:name=".Startup" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.PRE_BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
         <service
             android:name=".QuadDACTileService"
             android:icon="@drawable/ic_quad_dac_icon"
