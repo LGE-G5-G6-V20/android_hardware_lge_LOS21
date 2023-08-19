@@ -26,9 +26,6 @@ public class Constants {
     public static final String SET_LEFT_BALANCE_COMMAND = "hifi_dac_l_volume=";
     public static final String SET_RIGHT_BALANCE_COMMAND = "hifi_dac_r_volume=";
 
-    public static final String PROPERTY_HIFI_DAC_NORMAL = "persist.audio.hifi.normal";
-    public static final String PROPERTY_HIFI_DAC_ADVANCED = "persist.audio.hifi.advanced";
-    public static final String PROPERTY_HIFI_DAC_AUX = "persist.audio.hifi.aux";
     public static final String PROPERTY_DIGITAL_FILTER = "persist.vendor.lge.audio.hifi_dac.digitalFilter"; // not yet implemented in audio hal
     public static final String PROPERTY_SOUND_PRESET = "persist.vendor.lge.audio.hifi_dac.soundPreset"; // not yet implemented in audio hal
     public static final String PROPERTY_LEFT_BALANCE = "persist.vendor.lge.audio.hifi_dac.left_balance"; // not yet implemented in audio hal
