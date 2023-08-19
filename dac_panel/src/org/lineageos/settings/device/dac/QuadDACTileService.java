@@ -18,21 +18,26 @@ public class QuadDACTileService extends TileService {
     private HeadsetPluggedTileReceiver headsetPluggedTileReceiver = new HeadsetPluggedTileReceiver();
 
     @Override
-    public void onClick() {
+    public void onClick()
+    {
         super.onClick();
 
-        if(QuadDAC.isEnabled())
-        {
+        if(QuadDAC.isEnabled()) {
             QuadDAC.disable();
+            /* TODO: Reconfigure routes here */
             setTileInactive();
         } else {
             QuadDAC.enable();
+            /* TODO: Reconfigure routes here */
+            QuadDAC.enabledSetup();
             setTileActive();
         }
+
     }
 
     @Override
-    public void onStartListening() {
+    public void onStartListening()
+    {
         super.onStartListening();
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
@@ -40,26 +45,27 @@ public class QuadDACTileService extends TileService {
 
         AudioManager am = getSystemService(AudioManager.class);
 
-        if(!am.isWiredHeadsetOn())
-        {
+        if(!am.isWiredHeadsetOn()){
             setTileUnavailable();
-	    return;
+	        return;
         }
 	
-	if(QuadDAC.isEnabled())
-	{
-	    setTileActive();
-	} else {
-	    setTileInactive();
-	}
+        if(QuadDAC.isEnabled()) {
+            /* TODO: Reconfigure routes here */
+            QuadDAC.enabledSetup();
+            setTileActive();
+        } else {
+            /* TODO: Reconfigure routes here */
+            setTileInactive();
+        }
     }
 
     @Override
-    public void onStopListening() {
+    public void onStopListening()
+    {
         super.onStopListening();
 
         unregisterReceiver(headsetPluggedTileReceiver);
-
     }
 
     private void setTileActive()
@@ -86,19 +92,22 @@ public class QuadDACTileService extends TileService {
 	    quaddactile.updateTile();
     }
 
-    private class HeadsetPluggedTileReceiver extends BroadcastReceiver {
-
+    private class HeadsetPluggedTileReceiver extends BroadcastReceiver
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
                 int state = intent.getIntExtra("state", -1);
                 switch(state)
                 {
                     case 1: // Headset plugged in
-                        if(QuadDAC.isEnabled())
-                        {
+                        if(QuadDAC.isEnabled()) {
+                            /* TODO: Reconfigure routes here */
+                            QuadDAC.enabledSetup();
                             setTileActive();
                         } else {
+                            /* TODO: Reconfigure routes here */
                             setTileInactive();
                         }
                         break;

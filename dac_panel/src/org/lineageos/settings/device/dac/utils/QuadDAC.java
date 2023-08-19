@@ -14,18 +14,23 @@ public class QuadDAC {
 
     public static void enable()
     {
-        //int digital_filter = getDigitalFilter();
+        SystemProperties.set(Constants.PROPERTY_ESS_STATUS, "true");
+    }
+
+    public static void enabledSetup()
+    {
+        int mode = getDACMode();
         int left_balance = getLeftBalance();
         int right_balance = getRightBalance();
-        int mode = getDACMode();
-        //int avc_vol = getAVCVolume();
-        SystemProperties.set(Constants.PROPERTY_ESS_STATUS, "true");
-        SystemProperties.set(Constants.PROPERTY_ESS_MODE, "0");
+        int digital_filter = getDigitalFilter();
+        int avc_vol = getAVCVolume();
+
+        SystemProperties.set(Constants.PROPERTY_ESS_MODE, Integer.toString(mode));
         setDACMode(mode);
         setLeftBalance(left_balance);
         setRightBalance(right_balance);
-        //setDigitalFilter(digital_filter);
-        //setAVCVolume(avc_vol);
+        setDigitalFilter(digital_filter);
+        setAVCVolume(avc_vol);
     }
 
     public static void disable()
