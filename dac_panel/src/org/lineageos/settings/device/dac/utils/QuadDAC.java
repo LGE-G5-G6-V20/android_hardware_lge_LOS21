@@ -20,7 +20,7 @@ public class QuadDAC {
         int right_balance = getRightBalance();
         int mode = getDACMode();
         int avc_vol = getAVCVolume();
-        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_ENABLED, "true");
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_NORMAL, "true");
         setDACMode(mode);
         setLeftBalance(left_balance);
         setRightBalance(right_balance);
@@ -31,7 +31,7 @@ public class QuadDAC {
 
     public static void disable()
     {
-        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_ENABLED, "false");
+        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_NORMAL, "false");
     }
 
     public static void setHifiDACdop(int dop)
@@ -50,13 +50,19 @@ public class QuadDAC {
         switch(mode)
         {
         case 0:
-            FileUtils.writeLine(Constants.HEADSET_TYPE_SYSFS, "normal");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_NORMAL, "true");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_ADVANCED, "false"); //Not the cleanest I know, I'll work on a cleaner solution later.
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_AUX, "false");
             break;
         case 1:
-            FileUtils.writeLine(Constants.HEADSET_TYPE_SYSFS, "hifi");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_NORMAL, "false");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_ADVANCED, "true");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_AUX, "false");
             break;
         case 2:
-            FileUtils.writeLine(Constants.HEADSET_TYPE_SYSFS, "aux");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_NORMAL, "false");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_ADVANCED, "false");
+            SystemProperties.set(Constants.PROPERTY_HIFI_DAC_AUX, "true");
             break;
         default: 
             return;
@@ -138,7 +144,7 @@ public class QuadDAC {
 
     public static boolean isEnabled()
     {
-        String hifi_dac = SystemProperties.get(Constants.PROPERTY_HIFI_DAC_ENABLED);
+        String hifi_dac = SystemProperties.get(Constants.PROPERTY_HIFI_DAC_NORMAL);
         return hifi_dac.equals("ON");
     }
 

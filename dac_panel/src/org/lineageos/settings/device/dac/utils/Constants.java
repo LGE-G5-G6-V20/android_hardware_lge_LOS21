@@ -26,7 +26,9 @@ public class Constants {
     public static final String SET_LEFT_BALANCE_COMMAND = "hifi_dac_l_volume=";
     public static final String SET_RIGHT_BALANCE_COMMAND = "hifi_dac_r_volume=";
 
-    public static final String PROPERTY_HIFI_DAC_ENABLED = "persist.audio.hifi.enabled";
+    public static final String PROPERTY_HIFI_DAC_NORMAL = "persist.audio.hifi.normal";
+    public static final String PROPERTY_HIFI_DAC_ADVANCED = "persist.audio.hifi.advanced";
+    public static final String PROPERTY_HIFI_DAC_AUX = "persist.audio.hifi.aux";
     public static final String PROPERTY_DIGITAL_FILTER = "persist.vendor.lge.audio.hifi_dac.digitalFilter"; // not yet implemented in audio hal
     public static final String PROPERTY_SOUND_PRESET = "persist.vendor.lge.audio.hifi_dac.soundPreset"; // not yet implemented in audio hal
     public static final String PROPERTY_LEFT_BALANCE = "persist.vendor.lge.audio.hifi_dac.left_balance"; // not yet implemented in audio hal
@@ -36,9 +38,9 @@ public class Constants {
     public static final String PROPERTY_HIFI_DAC_AVC_VOLUME = "persist.vendor.lge.audio.hifi_dac.avc_volume"; // not yet implemented in audio hal
     public static final String PROPERTY_HIFI_DAC_MASTER_VOLUME = "persist.vendor.lge.audio.hifi_dac.master_volume"; // not yet implemented in audio hal
 
-    public static final String HEADSET_TYPE_SYSFS = "/sys/devices/platform/soc/a90000.i2c/i2c-4/4-0048/headset_type";
+    public static final String HEADSET_TYPE_SYSFS = "/sys/devices/platform/soc/a90000.i2c/i2c-4/4-0048/headset_type"; //This is going to be removed
     public static final String AVC_VOLUME_SYSFS = "/sys/devices/platform/soc/a90000.i2c/i2c-4/4-0048/avc_volume";
-    public static final String MASTER_VOLUME_SYSFS = "/sys/devices/platform/soc/a90000.i2c/i2c-4/4-0048/master_volume";
+    public static final String MASTER_VOLUME_SYSFS = "/sys/devices/platform/soc/a90000.i2c/i2c-4/4-0048/master_volume"; //Is this even used? Going to be nuked during clean up
     public static final String ESS_FILTER_SYSFS = "/sys/devices/platform/soc/a90000.i2c/i2c-4/4-0048/ess_filter";
 
     public static final HashMap<Double, Integer> balanceHashMap = new HashMap<>();
