@@ -29,13 +29,6 @@
             android:defaultValue="-14" />
 
         <ListPreference
-            android:key="sound_preset_dropdown"
-            android:title="@string/sound_preset"
-            android:summary="%s"
-            android:entries="@array/sound_preset_entry_values"
-            android:entryValues="@array/sound_preset_entry_values" />
-
-        <ListPreference
             android:key="digital_filter_dropdown"
             android:title="@string/digital_filter"
             android:summary="%s"

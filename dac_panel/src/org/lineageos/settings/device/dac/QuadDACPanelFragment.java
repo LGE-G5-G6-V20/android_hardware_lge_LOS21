@@ -28,9 +28,9 @@ public class QuadDACPanelFragment extends PreferenceFragment
     private static final String TAG = "QuadDACPanelFragment";
 
     private SwitchPreference quaddac_switch;
-    private ListPreference sound_preset_list, digital_filter_list, dop_list, mode_list;
+    private ListPreference digital_filter_list, dop_list, mode_list;
     private BalancePreference balance_preference;
-    private SeekBarPreference avc_volume, master_volume;
+    private SeekBarPreference avc_volume;
 
     private HeadsetPluggedFragmentReceiver headsetPluggedFragmentReceiver;
 
@@ -75,13 +75,6 @@ public class QuadDACPanelFragment extends PreferenceFragment
                 QuadDAC.setDigitalFilter(digital_filter);
                 return true;
 
-            } else if(preference.getKey().equals(Constants.SOUND_PRESET_KEY))
-            { 
-                ListPreference lp = (ListPreference) preference;
-
-                int sound_preset = lp.findIndexOfValue((String) newValue);
-                QuadDAC.setSoundPreset(sound_preset);
-                return true;
             }
             return false;
         }
@@ -128,9 +121,6 @@ public class QuadDACPanelFragment extends PreferenceFragment
         quaddac_switch = (SwitchPreference) findPreference(Constants.DAC_SWITCH_KEY);
         quaddac_switch.setOnPreferenceChangeListener(this);
 
-        sound_preset_list = (ListPreference) findPreference(Constants.SOUND_PRESET_KEY);
-        sound_preset_list.setOnPreferenceChangeListener(this);
-
         digital_filter_list = (ListPreference) findPreference(Constants.DIGITAL_FILTER_KEY);
         digital_filter_list.setOnPreferenceChangeListener(this);
 
@@ -165,7 +155,6 @@ public class QuadDACPanelFragment extends PreferenceFragment
 
     private void enableExtraSettings()
     {
-        sound_preset_list.setEnabled(true);
         digital_filter_list.setEnabled(true);
         mode_list.setEnabled(true);
         avc_volume.setEnabled(true);
@@ -174,7 +163,6 @@ public class QuadDACPanelFragment extends PreferenceFragment
 
     private void disableExtraSettings()
     {
-        sound_preset_list.setEnabled(false);
         digital_filter_list.setEnabled(false);
         mode_list.setEnabled(false);
         avc_volume.setEnabled(false);

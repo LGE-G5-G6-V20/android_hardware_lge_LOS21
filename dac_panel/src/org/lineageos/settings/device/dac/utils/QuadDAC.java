@@ -14,8 +14,7 @@ public class QuadDAC {
 
     public static void enable()
     {
-        int digital_filter = getDigitalFilter();
-        int sound_preset = getSoundPreset();
+        //int digital_filter = getDigitalFilter();
         int left_balance = getLeftBalance();
         int right_balance = getRightBalance();
         int mode = getDACMode();
@@ -25,8 +24,7 @@ public class QuadDAC {
         setDACMode(mode);
         setLeftBalance(left_balance);
         setRightBalance(right_balance);
-        setDigitalFilter(digital_filter);
-        setSoundPreset(sound_preset);
+        //setDigitalFilter(digital_filter);
         //setAVCVolume(avc_vol);
     }
 
@@ -81,21 +79,10 @@ public class QuadDAC {
         return SystemProperties.getInt(Constants.PROPERTY_HIFI_DAC_AVC_VOLUME, 0);
     }
 
-    public static void setMasterVolume(int master_volume)
-    {
-        FileUtils.writeLine(Constants.MASTER_VOLUME_SYSFS, (master_volume * -1) + "");
-        SystemProperties.set(Constants.PROPERTY_HIFI_DAC_MASTER_VOLUME, Integer.toString(master_volume));
-    }
-
-    public static int getMasterVolume()
-    {
-        return SystemProperties.getInt(Constants.PROPERTY_HIFI_DAC_MASTER_VOLUME, 0);
-    }
-
     public static void setDigitalFilter(int filter)
     {
         AudioSystem.setParameters(Constants.SET_DIGITAL_FILTER_COMMAND + filter);
-        //FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
+        FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
         SystemProperties.set(Constants.PROPERTY_DIGITAL_FILTER, Integer.toString(filter));
     }
 
@@ -104,21 +91,17 @@ public class QuadDAC {
         return SystemProperties.getInt(Constants.PROPERTY_DIGITAL_FILTER, 0);
     }
 
-    public static void setSoundPreset(int preset)
-    {
-        AudioSystem.setParameters(Constants.SET_SOUND_PRESET_COMMAND + preset);
-        SystemProperties.set(Constants.PROPERTY_SOUND_PRESET, Integer.toString(preset));
-    }
-
-    public static int getSoundPreset()
-    {
-        return SystemProperties.getInt(Constants.PROPERTY_SOUND_PRESET, 0);
-    }
-
     public static void setLeftBalance(int balance)
     {
+        /* 
+         * Looks like we can keep using integers to set balance volume, its value
+         * is halved internally by the es9218/es9218p kernel driver (-1 here equals -0.5dB).
+         */
+        int setval;
         AudioSystem.setParameters(Constants.SET_LEFT_BALANCE_COMMAND + balance);
         SystemProperties.set(Constants.PROPERTY_LEFT_BALANCE, Integer.toString(balance));
+        setval = getLeftBalance();
+        FileUtils.writeLine(Constants.ESS_BALANCE_LEFT_SYSFS, setval + "");
     }
 
     public static int getLeftBalance()
@@ -128,8 +111,11 @@ public class QuadDAC {
 
     public static void setRightBalance(int balance)
     {
+        int setval;
         AudioSystem.setParameters(Constants.SET_RIGHT_BALANCE_COMMAND + balance);
         SystemProperties.set(Constants.PROPERTY_RIGHT_BALANCE, Integer.toString(balance));
+        setval = getRightBalance();
+        FileUtils.writeLine(Constants.ESS_BALANCE_RIGHT_SYSFS, setval + "");
     }
 
     public static int getRightBalance()

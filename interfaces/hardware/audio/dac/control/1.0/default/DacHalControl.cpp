@@ -37,15 +37,10 @@ static constexpr int32_t MIN_BALANCE_VALUE = -12;
 
 static std::vector<KeyValue> quaddac_states = {{"Off", "0"}, {"On", "1"}};
 
-static std::vector<KeyValue> sound_presets = {{"Normal", "0"},
-                                              {"Enhanced", "1"},
-                                              {"Detailed", "2"},
-                                              {"Live", "3"},
-                                              {"Bass", "4"}};
-
-static std::vector<KeyValue> digital_filters = {{"Short", "0"},
-                                                {"Sharp", "1"},
-                                                {"Slow", "2"}};
+static std::vector<KeyValue> digital_filters = {{"Cosine phase fast roll-off", "0"},
+                                                {"Cosine phase slow roll-off", "1"},
+                                                {"Sine phase fast roll-off",   "2"},
+                                                {"Sine phase fast roll-off 2", "3"}};
 
 
 
@@ -175,12 +170,6 @@ DacHalControl::DacHalControl() {
     digfilter_fstates.states = hidl_vec<KeyValue> {digital_filters};
     mSupportedStates.emplace(HalFeature::DigitalFilter, digfilter_fstates);
 
-    /* Sound Presets */
-    mSupportedHalFeatures.push_back(HalFeature::SoundPreset);
-    FeatureStates soundpresets_fstates;
-    soundpresets_fstates.states = hidl_vec<KeyValue> {sound_presets};
-    mSupportedStates.emplace(HalFeature::SoundPreset, soundpresets_fstates);
-
     /* Balance Left */
     mSupportedHalFeatures.push_back(HalFeature::BalanceLeft);
     FeatureStates balanceleft_fstates;
@@ -199,7 +188,6 @@ DacHalControl::DacHalControl() {
 
     setFeatureValue(HalFeature::QuadDAC, getFeatureValue(HalFeature::QuadDAC));
     setFeatureValue(HalFeature::DigitalFilter, getFeatureValue(HalFeature::DigitalFilter));
-    setFeatureValue(HalFeature::SoundPreset, getFeatureValue(HalFeature::SoundPreset));
     setFeatureValue(HalFeature::BalanceLeft, getFeatureValue(HalFeature::BalanceLeft));
     setFeatureValue(HalFeature::BalanceRight, getFeatureValue(HalFeature::BalanceRight));
 }
@@ -249,11 +237,6 @@ Return<bool> DacHalControl::setFeatureValue(HalFeature feature, int32_t value) {
             case HalFeature::DigitalFilter: {
                 kv.name = SET_DIGITAL_FILTER_COMMAND;
                 property = PROPERTY_DIGITAL_FILTER;
-                break;
-            }
-            case HalFeature::SoundPreset: {
-                kv.name = SET_SOUND_PRESET_COMMAND;
-                property = PROPERTY_SOUND_PRESET;
                 break;
             }
             case HalFeature::BalanceLeft: {
@@ -342,10 +325,6 @@ Return<int32_t> DacHalControl::getFeatureValue(HalFeature feature) {
         switch(feature) {
             case HalFeature::DigitalFilter: {
                 property = PROPERTY_DIGITAL_FILTER;
-                break;
-            }
-            case HalFeature::SoundPreset: {
-                property = PROPERTY_SOUND_PRESET;
                 break;
             }
             case HalFeature::BalanceLeft: {

@@ -25,7 +25,6 @@
 /* Properties */
 #define PROPERTY_HIFI_DAC_ENABLED          "persist.vendor.lge.audio.hifi_dac"
 #define PROPERTY_DIGITAL_FILTER            "persist.vendor.lge.audio.hifi_dac.digitalFilter"
-#define PROPERTY_SOUND_PRESET              "persist.vendor.lge.audio.hifi_dac.soundPreset"
 #define PROPERTY_LEFT_BALANCE              "persist.vendor.lge.audio.hifi_dac.left_balance"
 #define PROPERTY_RIGHT_BALANCE             "persist.vendor.lge.audio.hifi_dac.right_balance"
 #define PROPERTY_HIFI_DAC_MODE             "persist.vendor.lge.audio.hifi_dac.mode"
@@ -42,12 +41,8 @@
 #define DAC_COMMAND                         "hifi_dac"
 #define SET_DAC_ON_COMMAND                  "on"
 #define SET_DAC_OFF_COMMAND                 "off"
-
 #define SET_HIFI_DAC_DOP_COMMAND            "hifi_dac_dop"
-
-#define SET_DIGITAL_FILTER_COMMAND          "ESS_FILTER"
-#define SET_SOUND_PRESET_COMMAND            "SOUND_PRESET"
-
+#define SET_DIGITAL_FILTER_COMMAND          "ess_filter"
 #define SET_LEFT_BALANCE_COMMAND            "hifi_dac_l_volume"
 #define SET_RIGHT_BALANCE_COMMAND           "hifi_dac_r_volume"
 
