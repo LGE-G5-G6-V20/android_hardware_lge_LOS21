@@ -19,7 +19,7 @@ public class QuadDAC {
         int left_balance = getLeftBalance();
         int right_balance = getRightBalance();
         int mode = getDACMode();
-        int avc_vol = getAVCVolume();
+        //int avc_vol = getAVCVolume();
         SystemProperties.set(Constants.PROPERTY_ESS_STATUS, "true");
         SystemProperties.set(Constants.PROPERTY_ESS_MODE, "0");
         setDACMode(mode);
@@ -27,7 +27,7 @@ public class QuadDAC {
         setRightBalance(right_balance);
         setDigitalFilter(digital_filter);
         setSoundPreset(sound_preset);
-        setAVCVolume(avc_vol);
+        //setAVCVolume(avc_vol);
     }
 
     public static void disable()
