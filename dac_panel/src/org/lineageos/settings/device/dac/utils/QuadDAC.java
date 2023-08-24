@@ -5,6 +5,7 @@ import android.os.SystemProperties;
 import android.util.Log;
 
 import org.lineageos.hardware.util.FileUtils;
+import org.lineageos.settings.device.dac.QuadDACPanelFragment;
 
 public class QuadDAC {
 
@@ -19,11 +20,18 @@ public class QuadDAC {
 
     public static void enabledSetup()
     {
+        int i;
         int mode = getDACMode();
         int left_balance = getLeftBalance();
         int right_balance = getRightBalance();
         int digital_filter = getDigitalFilter();
         int avc_vol = getAVCVolume();
+        int custom_filter_shape = getCustomFilterShape();
+        int custom_filter_symmetry = getCustomFilterSymmetry();
+        int[] custom_filter_coefficients = new int[14];
+        for(i = 0; i < 14; i++) {
+            custom_filter_coefficients[i] = getCustomFilterCoeff(i);
+        }
 
         SystemProperties.set(Constants.PROPERTY_ESS_MODE, Integer.toString(mode));
         setDACMode(mode);
@@ -31,6 +39,11 @@ public class QuadDAC {
         setRightBalance(right_balance);
         setDigitalFilter(digital_filter);
         setAVCVolume(avc_vol);
+        setCustomFilterShape(custom_filter_shape);
+        setCustomFilterSymmetry(custom_filter_symmetry);
+        for(i = 0; i < 14; i++) {
+            setCustomFilterCoeff(i, custom_filter_coefficients[i]);
+        }
     }
 
     public static void disable()
@@ -89,11 +102,49 @@ public class QuadDAC {
         AudioSystem.setParameters(Constants.SET_DIGITAL_FILTER_COMMAND + filter);
         FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
         SystemProperties.set(Constants.PROPERTY_DIGITAL_FILTER, Integer.toString(filter));
+        if(filter == 3) { /* Custom filter */
+            /*
+             * If it's a custom filter, we need to apply its settings. Any of the functions
+             * below should suffice since it'll load all settings from memory by parsing its
+             * data.
+             */
+            setCustomFilterShape(getCustomFilterShape());
+        }
     }
 
     public static int getDigitalFilter()
     {
         return SystemProperties.getInt(Constants.PROPERTY_DIGITAL_FILTER, 0);
+    }
+
+    public static void setCustomFilterShape(int shape) {
+        if(shape <=4)
+            SystemProperties.set(Constants.PROPERTY_CUSTOM_FILTER_SHAPE, Integer.toString(shape));
+        else /* Filter 5 (counting from 0) is enumerated 6 on es9218.h, so anything after receives +1 as well */
+            SystemProperties.set(Constants.PROPERTY_CUSTOM_FILTER_SHAPE, Integer.toString(shape+1));
+        FileUtils.writeLine(Constants.ESS_CUSTOM_FILTER_SYSFS, parseUpdatedCustomFilterData());
+    }
+
+    public static int getCustomFilterShape() {
+        return SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_SHAPE, 0);
+    }
+
+    public static void setCustomFilterSymmetry(int symmetry) {
+        SystemProperties.set(Constants.PROPERTY_CUSTOM_FILTER_SYMMETRY, Integer.toString(symmetry));
+        FileUtils.writeLine(Constants.ESS_CUSTOM_FILTER_SYSFS, parseUpdatedCustomFilterData());
+    }
+
+    public static int getCustomFilterSymmetry() {
+        return SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_SYMMETRY, 0);
+    }
+
+    public static void setCustomFilterCoeff(int coeffIndex, int coeff_val) {
+        SystemProperties.set(Constants.PROPERTY_CUSTOM_FILTER_COEFFS[coeffIndex], Integer.toString(coeff_val));
+        FileUtils.writeLine(Constants.ESS_CUSTOM_FILTER_SYSFS, parseUpdatedCustomFilterData());
+    }
+
+    public static int getCustomFilterCoeff(int coeffIndex) {
+        return SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_COEFFS[coeffIndex], 0);
     }
 
     public static void setLeftBalance(int balance)
@@ -132,6 +183,24 @@ public class QuadDAC {
     {
         String hifi_dac = SystemProperties.get(Constants.PROPERTY_ESS_STATUS);
         return hifi_dac.equals("ON");
+    }
+
+    private static String parseUpdatedCustomFilterData() {
+        StringBuilder temp_string = new StringBuilder();
+
+        /*
+         * Let's build the actual string with the custom filter's shape, symmetry and 14 Stage 2 coefficients
+         *
+         */
+        temp_string.append(SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_SHAPE, 0)).append(",");
+        temp_string.append(SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_SYMMETRY, 0)).append(",");
+        for(int i = 0; i < 14; i++) {
+            temp_string.append(SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_COEFFS[i], 0));
+            if(i < 13) /* Last element doesn't need to have a comma appended after it */
+                temp_string.append(",");
+        }
+
+        return temp_string.toString();
     }
 
 }

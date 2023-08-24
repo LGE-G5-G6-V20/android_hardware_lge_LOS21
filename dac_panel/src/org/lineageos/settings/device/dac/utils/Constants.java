@@ -12,6 +12,13 @@ public class Constants {
     public static final String HIFI_MODE_KEY = "hifi_mode_dropdown";
     public static final String AVC_VOLUME_KEY = "avc_volume_seekbar";
 
+    public static final String   CUSTOM_FILTER_SHAPE_KEY = "custom_filter_shape";
+    public static final String   CUSTOM_FILTER_SYMMETRY_KEY = "custom_filter_symmetry";
+    public static final String[] CUSTOM_FILTER_COEFF_KEYS = { "custom_filter_coeff0", "custom_filter_coeff1", "custom_filter_coeff2",
+            "custom_filter_coeff3", "custom_filter_coeff4", "custom_filter_coeff5", "custom_filter_coeff6", "custom_filter_coeff7",
+            "custom_filter_coeff8", "custom_filter_coeff9", "custom_filter_coeff10", "custom_filter_coeff11", "custom_filter_coeff12",
+            "custom_filter_coeff13" };
+
     public static final String SET_DAC_ON_COMMAND = "hifi_dac=on";
     public static final String SET_DAC_OFF_COMMAND = "hifi_dac=off";
     public static final String SET_HIFI_DAC_DOP_COMMAND = "hifi_dac_dop=";
@@ -19,19 +26,27 @@ public class Constants {
     public static final String SET_LEFT_BALANCE_COMMAND = "hifi_dac_l_volume=";
     public static final String SET_RIGHT_BALANCE_COMMAND = "hifi_dac_r_volume=";
 
-    public static final String PROPERTY_ESS_MODE = "persist.audio.ess.mode";
-    public static final String PROPERTY_ESS_STATUS = "persist.audio.hifi.enabled";
-    public static final String PROPERTY_DIGITAL_FILTER = "persist.vendor.lge.audio.hifi_dac.digitalFilter"; // not yet implemented in audio hal
-    public static final String PROPERTY_LEFT_BALANCE = "persist.vendor.lge.audio.hifi_dac.left_balance"; // not yet implemented in audio hal
-    public static final String PROPERTY_RIGHT_BALANCE = "persist.vendor.lge.audio.hifi_dac.right_balance"; // not yet implemented in audio hal
-    public static final String PROPERTY_HIFI_DAC_DOP = "persist.vendor.lge.audio.hifi_dac.dop"; // not yet implemented in audio hal
-    public static final String PROPERTY_HIFI_DAC_MODE = "persist.vendor.lge.audio.hifi_dac.mode"; // not yet implemented in audio hal
-    public static final String PROPERTY_HIFI_DAC_AVC_VOLUME = "persist.vendor.lge.audio.hifi_dac.avc_volume"; // not yet implemented in audio hal
+    public static final String   PROPERTY_ESS_MODE = "persist.audio.ess.mode";
+    public static final String   PROPERTY_ESS_STATUS = "persist.audio.hifi.enabled";
+    public static final String   PROPERTY_DIGITAL_FILTER = "persist.vendor.lge.audio.hifi_dac.digitalFilter"; // not yet implemented in audio hal
+    public static final String   PROPERTY_LEFT_BALANCE = "persist.vendor.lge.audio.hifi_dac.left_balance"; // not yet implemented in audio hal
+    public static final String   PROPERTY_RIGHT_BALANCE = "persist.vendor.lge.audio.hifi_dac.right_balance"; // not yet implemented in audio hal
+    public static final String   PROPERTY_HIFI_DAC_DOP = "persist.vendor.lge.audio.hifi_dac.dop"; // not yet implemented in audio hal
+    public static final String   PROPERTY_HIFI_DAC_MODE = "persist.vendor.lge.audio.hifi_dac.mode"; // not yet implemented in audio hal
+    public static final String   PROPERTY_HIFI_DAC_AVC_VOLUME = "persist.vendor.lge.audio.hifi_dac.avc_volume"; // not yet implemented in audio hal
+    public static final String   PROPERTY_CUSTOM_FILTER_SHAPE = "persist.audio.ess.customFilterShape";
+    public static final String   PROPERTY_CUSTOM_FILTER_SYMMETRY = "persist.audio.ess.customFilterSymmetry";
+    public static final String[] PROPERTY_CUSTOM_FILTER_COEFFS = { "persist.audio.ess.customFilterCoeff0", "persist.audio.ess.customFilterCoeff1",
+            "persist.audio.ess.customFilterCoeff2", "persist.audio.ess.customFilterCoeff3", "persist.audio.ess.customFilterCoeff4",
+            "persist.audio.ess.customFilterCoeff5", "persist.audio.ess.customFilterCoeff6", "persist.audio.ess.customFilterCoeff7",
+            "persist.audio.ess.customFilterCoeff8", "persist.audio.ess.customFilterCoeff9", "persist.audio.ess.customFilterCoeff10",
+            "persist.audio.ess.customFilterCoeff11", "persist.audio.ess.customFilterCoeff12", "persist.audio.ess.customFilterCoeff13" };
 
     public static final String AVC_VOLUME_SYSFS = "/sys/kernel/es9218_dac/avc_volume";
     public static final String ESS_FILTER_SYSFS = "/sys/kernel/es9218_dac/ess_filter";
     public static final String ESS_BALANCE_LEFT_SYSFS = "/sys/kernel/es9218_dac/left_volume";
     public static final String ESS_BALANCE_RIGHT_SYSFS = "/sys/kernel/es9218_dac/right_volume";
+    public static final String ESS_CUSTOM_FILTER_SYSFS = "/sys/kernel/es9218_dac/ess_custom_filter";
 
 
     public static final HashMap<Double, Integer> balanceHashMap = new HashMap<>();
