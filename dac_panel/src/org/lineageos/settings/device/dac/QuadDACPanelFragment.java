@@ -57,12 +57,12 @@ public class QuadDACPanelFragment extends PreferenceFragment
             boolean set_dac_on = (boolean) newValue;
 
             if (set_dac_on) {
-                enableExtraSettings();
                 QuadDAC.enable();
+                enableExtraSettings();
                 return true;
             } else {
-                disableExtraSettings();
                 QuadDAC.disable();
+                disableExtraSettings();
                 return true;
             }
         }
@@ -82,12 +82,14 @@ public class QuadDACPanelFragment extends PreferenceFragment
 
                 int digital_filter = lp.findIndexOfValue((String) newValue);
 
-                if(digital_filter == 3) {
-                    enableCustomFilter(); /* Custom filter panel should only show up with Filter [3] (fourth one) selected */
-                } else {
-                    disableCustomFilter();
-                }
                 QuadDAC.setDigitalFilter(digital_filter);
+
+                /* Custom filter panel should only show up with Filter [3] (fourth one) selected */
+                if(digital_filter == 3)
+                    enableCustomFilter();
+                else
+                    disableCustomFilter();
+
                 return true;
 
             } else if(preference.getKey().equals(Constants.CUSTOM_FILTER_SHAPE_KEY))
@@ -136,9 +138,8 @@ public class QuadDACPanelFragment extends PreferenceFragment
 
                             QuadDAC.setCustomFilterCoeff(i, coeffVal);
                             return true;
-                        } else {
+                        } else
                             return false;
-                        }
                     }
                 }
             }
@@ -209,9 +210,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
             quaddac_switch.setEnabled(false);
             disableExtraSettings();
             if(QuadDAC.isEnabled())
-            {
                 quaddac_switch.setChecked(true);
-            }
         }
     }
 
@@ -233,22 +232,44 @@ public class QuadDACPanelFragment extends PreferenceFragment
         disableCustomFilter();
     }
 
-    private void enableCustomFilter() {
+    private void enableCustomFilter() 
+    {
+        checkCustomFilterVisibility();
         custom_filter_shape.setEnabled(true);
         custom_filter_symmetry.setEnabled(true);
-        for(int i = 0; i < 14; i++){
+        for(int i = 0; i < 14; i++)
             custom_filter_coeffs[i].setEnabled(true);
-        }
 
         /* To apply the custom filter's settings */
+        QuadDAC.setDigitalFilter(QuadDAC.getDigitalFilter());
         QuadDAC.setCustomFilterShape(QuadDAC.getCustomFilterShape());
     }
 
     private void disableCustomFilter() {
+        checkCustomFilterVisibility();
         custom_filter_shape.setEnabled(false);
         custom_filter_symmetry.setEnabled(false);
-        for(int i = 0; i < 14; i++){
+        for(int i = 0; i < 14; i++)
             custom_filter_coeffs[i].setEnabled(false);
+    }
+
+    private void checkCustomFilterVisibility() {
+        /* 
+         * If the selected digital filter is the custom filter,
+         * its preferences should be visible. Otherwise, hide them
+         * to remove unused preferences from the panel.
+        */
+        if(QuadDAC.getDigitalFilter() == 3) {
+            custom_filter_shape.setVisible(true);
+            custom_filter_symmetry.setVisible(true);
+            for(int i = 0; i < 14; i++)
+                custom_filter_coeffs[i].setVisible(true);
+        }
+        else {
+            custom_filter_shape.setVisible(false);
+            custom_filter_symmetry.setVisible(false);
+            for(int i = 0; i < 14; i++)
+                custom_filter_coeffs[i].setVisible(false);
         }
     }
 
@@ -263,9 +284,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
                     case 1: // Headset plugged in
                         quaddac_switch.setEnabled(true);
                         if(quaddac_switch.isChecked())
-                        {
                             enableExtraSettings();
-                        }
                         break;
                     case 0: // Headset unplugged
                         quaddac_switch.setEnabled(false);
