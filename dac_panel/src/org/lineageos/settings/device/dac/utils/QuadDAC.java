@@ -5,7 +5,6 @@ import android.os.SystemProperties;
 import android.util.Log;
 
 import org.lineageos.hardware.util.FileUtils;
-import org.lineageos.settings.device.dac.QuadDACPanelFragment;
 
 public class QuadDAC {
 
@@ -182,7 +181,7 @@ public class QuadDAC {
     public static boolean isEnabled()
     {
         String hifi_dac = SystemProperties.get(Constants.PROPERTY_ESS_STATUS);
-        return hifi_dac.equals("ON");
+        return hifi_dac.equals("true");
     }
 
     private static String parseUpdatedCustomFilterData() {

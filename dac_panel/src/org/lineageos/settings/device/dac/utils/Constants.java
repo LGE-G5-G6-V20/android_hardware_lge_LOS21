@@ -8,6 +8,7 @@ public class Constants {
     public static final String DAC_SWITCH_KEY = "quaddac_switch";
     public static final String DIGITAL_FILTER_KEY = "digital_filter_dropdown";
     public static final String BALANCE_KEY = "balance";
+    public static final String RESET_COEFFICIENTS_KEY = "reset_coefficients";
     public static final String HIFI_DOP_KEY = "hifi_dop_dropdown";
     public static final String HIFI_MODE_KEY = "hifi_mode_dropdown";
     public static final String AVC_VOLUME_KEY = "avc_volume_seekbar";

@@ -19,6 +19,7 @@ import android.view.MenuItem;
 
 
 import org.lineageos.settings.device.dac.ui.BalancePreference;
+import org.lineageos.settings.device.dac.ui.ButtonPreference;
 import org.lineageos.settings.device.dac.utils.Constants;
 import org.lineageos.settings.device.dac.utils.QuadDAC;
 
@@ -31,17 +32,18 @@ public class QuadDACPanelFragment extends PreferenceFragment
     private ListPreference digital_filter_list, dop_list, mode_list;
     private BalancePreference balance_preference;
     private SeekBarPreference avc_volume;
-
+    private HeadsetPluggedFragmentReceiver headsetPluggedFragmentReceiver;
 
     /*** Custom filter UI props ***/
-
     /* Shape and symmetry selectors */
     private ListPreference custom_filter_shape, custom_filter_symmetry;
 
     /* Filter stage 2 coefficients (refer to the kernel's es9218.c for more info) */
     private static SeekBarPreference[] custom_filter_coeffs = new SeekBarPreference[14];
+    
+    /* Button to reset custom filter's coefficients, if needed. */
+    private ButtonPreference custom_filter_reset_coeffs_button;
 
-    private HeadsetPluggedFragmentReceiver headsetPluggedFragmentReceiver;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -134,7 +136,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
                         if (newValue instanceof Integer) {
                             Integer coeffVal = (Integer) newValue;
 
-                            custom_filter_coeffs[i].setSummary("Coefficient " + i + " : 0." + coeffVal);
+                            setCoeffSummary(i, coeffVal);
 
                             QuadDAC.setCustomFilterCoeff(i, coeffVal);
                             return true;
@@ -146,6 +148,11 @@ public class QuadDACPanelFragment extends PreferenceFragment
         }
 
         return false;
+    }
+
+    public static void setCoeffSummary(int index, int value) {
+        custom_filter_coeffs[index].setValue(value);
+        custom_filter_coeffs[index].setSummary("Coefficient " + index + " : 0." + value);
     }
 
     @Override
@@ -183,9 +190,11 @@ public class QuadDACPanelFragment extends PreferenceFragment
         {
             custom_filter_coeffs[i] = (SeekBarPreference) findPreference(Constants.CUSTOM_FILTER_COEFF_KEYS[i]);
             custom_filter_coeffs[i].setOnPreferenceChangeListener(this);
-            custom_filter_coeffs[i].setValue(QuadDAC.getCustomFilterCoeff(i));
-            custom_filter_coeffs[i].setSummary("Coefficient " + i + " : 0." + QuadDAC.getCustomFilterCoeff(i));
+            setCoeffSummary(i, QuadDAC.getCustomFilterCoeff(i));
         }
+
+        custom_filter_reset_coeffs_button = (ButtonPreference) findPreference(Constants.RESET_COEFFICIENTS_KEY);
+        custom_filter_reset_coeffs_button.setOnPreferenceChangeListener(this);
 
         mode_list = (ListPreference) findPreference(Constants.HIFI_MODE_KEY);
         mode_list.setOnPreferenceChangeListener(this);
@@ -240,6 +249,8 @@ public class QuadDACPanelFragment extends PreferenceFragment
         for(int i = 0; i < 14; i++)
             custom_filter_coeffs[i].setEnabled(true);
 
+        custom_filter_reset_coeffs_button.setEnabled(true);
+
         /* To apply the custom filter's settings */
         QuadDAC.setDigitalFilter(QuadDAC.getDigitalFilter());
         QuadDAC.setCustomFilterShape(QuadDAC.getCustomFilterShape());
@@ -251,6 +262,8 @@ public class QuadDACPanelFragment extends PreferenceFragment
         custom_filter_symmetry.setEnabled(false);
         for(int i = 0; i < 14; i++)
             custom_filter_coeffs[i].setEnabled(false);
+        
+        custom_filter_reset_coeffs_button.setEnabled(false);
     }
 
     private void checkCustomFilterVisibility() {
@@ -264,12 +277,16 @@ public class QuadDACPanelFragment extends PreferenceFragment
             custom_filter_symmetry.setVisible(true);
             for(int i = 0; i < 14; i++)
                 custom_filter_coeffs[i].setVisible(true);
+
+            custom_filter_reset_coeffs_button.setVisible(true);
         }
         else {
             custom_filter_shape.setVisible(false);
             custom_filter_symmetry.setVisible(false);
             for(int i = 0; i < 14; i++)
                 custom_filter_coeffs[i].setVisible(false);
+
+            custom_filter_reset_coeffs_button.setVisible(false);
         }
     }
 
