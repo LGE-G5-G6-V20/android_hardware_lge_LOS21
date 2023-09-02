@@ -98,16 +98,18 @@ public class QuadDAC {
 
     public static void setDigitalFilter(int filter)
     {
-        AudioSystem.setParameters(Constants.SET_DIGITAL_FILTER_COMMAND + filter);
-        FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
-        SystemProperties.set(Constants.PROPERTY_DIGITAL_FILTER, Integer.toString(filter));
-        if(filter == 3) { /* Custom filter */
-            /*
-             * If it's a custom filter, we need to apply its settings. Any of the functions
-             * below should suffice since it'll load all settings from memory by parsing its
-             * data.
-             */
-            setCustomFilterShape(getCustomFilterShape());
+        if(filter != getDigitalFilter()) {
+            AudioSystem.setParameters(Constants.SET_DIGITAL_FILTER_COMMAND + filter);
+            FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
+            SystemProperties.set(Constants.PROPERTY_DIGITAL_FILTER, Integer.toString(filter));
+            if(filter == 3) { /* Custom filter */
+                /*
+                * If it's a custom filter, we need to apply its settings. Any of the functions
+                * below should suffice since it'll load all settings from memory by parsing its
+                * data.
+                */
+                setCustomFilterShape(getCustomFilterShape());
+            }
         }
     }
 
