@@ -14,9 +14,10 @@ import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.SwitchPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.SeekBarPreference;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
-
+import android.widget.Toast;
 
 import org.lineageos.settings.device.dac.ui.BalancePreference;
 import org.lineageos.settings.device.dac.ui.ButtonPreference;
@@ -61,12 +62,15 @@ public class QuadDACPanelFragment extends PreferenceFragment
             if (set_dac_on) {
                 QuadDAC.enable();
                 enableExtraSettings();
+                Toast.makeText(getActivity(), Html.fromHtml("<b>Pause playback for a few seconds to apply!</b>") ,Toast.LENGTH_LONG).show();
                 return true;
             } else {
                 QuadDAC.disable();
                 disableExtraSettings();
+                Toast.makeText(getActivity(), Html.fromHtml("<b>Pause playback for a few seconds to apply!</b>") ,Toast.LENGTH_LONG).show();
                 return true;
             }
+
         }
         if(preference instanceof ListPreference)
         {
@@ -76,6 +80,8 @@ public class QuadDACPanelFragment extends PreferenceFragment
 
                 int mode = lp.findIndexOfValue((String) newValue);
                 QuadDAC.setDACMode(mode);
+
+                Toast.makeText(getActivity(), Html.fromHtml("<b>Pause playback for a few seconds to apply!</b>") ,Toast.LENGTH_LONG).show();
                 return true;
 
             } else if(preference.getKey().equals(Constants.DIGITAL_FILTER_KEY))
