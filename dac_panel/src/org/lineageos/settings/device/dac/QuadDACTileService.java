@@ -29,7 +29,6 @@ public class QuadDACTileService extends TileService {
         } else {
             QuadDAC.enable();
             /* TODO: Reconfigure routes here */
-            QuadDAC.enabledSetup();
             setTileActive();
         }
 
@@ -52,7 +51,6 @@ public class QuadDACTileService extends TileService {
 	
         if(QuadDAC.isEnabled()) {
             /* TODO: Reconfigure routes here */
-            QuadDAC.enabledSetup();
             setTileActive();
         } else {
             /* TODO: Reconfigure routes here */
@@ -71,6 +69,8 @@ public class QuadDACTileService extends TileService {
     private void setTileActive()
     {
         Tile quaddactile = getQsTile();
+
+        QuadDAC.enabledSetup();
         quaddactile.setState(Tile.STATE_ACTIVE);
         quaddactile.setLabel(getResources().getString(R.string.quad_dac_on));
 	    quaddactile.updateTile();
@@ -104,7 +104,6 @@ public class QuadDACTileService extends TileService {
                     case 1: // Headset plugged in
                         if(QuadDAC.isEnabled()) {
                             /* TODO: Reconfigure routes here */
-                            QuadDAC.enabledSetup();
                             setTileActive();
                         } else {
                             /* TODO: Reconfigure routes here */

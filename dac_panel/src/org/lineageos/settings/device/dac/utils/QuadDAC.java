@@ -23,8 +23,8 @@ public class QuadDAC {
         int mode = getDACMode();
         int left_balance = getLeftBalance();
         int right_balance = getRightBalance();
-        int digital_filter = getDigitalFilter();
         int avc_vol = getAVCVolume();
+        int digital_filter = getDigitalFilter();
         int custom_filter_shape = getCustomFilterShape();
         int custom_filter_symmetry = getCustomFilterSymmetry();
         int[] custom_filter_coefficients = new int[14];
@@ -36,8 +36,8 @@ public class QuadDAC {
         setDACMode(mode);
         setLeftBalance(left_balance);
         setRightBalance(right_balance);
-        setDigitalFilter(digital_filter);
         setAVCVolume(avc_vol);
+        setDigitalFilter(digital_filter);
         setCustomFilterShape(custom_filter_shape);
         setCustomFilterSymmetry(custom_filter_symmetry);
         for(i = 0; i < 14; i++) {
@@ -98,18 +98,16 @@ public class QuadDAC {
 
     public static void setDigitalFilter(int filter)
     {
-        if(filter != getDigitalFilter()) {
-            AudioSystem.setParameters(Constants.SET_DIGITAL_FILTER_COMMAND + filter);
-            FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
-            SystemProperties.set(Constants.PROPERTY_DIGITAL_FILTER, Integer.toString(filter));
-            if(filter == 3) { /* Custom filter */
-                /*
-                * If it's a custom filter, we need to apply its settings. Any of the functions
-                * below should suffice since it'll load all settings from memory by parsing its
-                * data.
-                */
-                setCustomFilterShape(getCustomFilterShape());
-            }
+        AudioSystem.setParameters(Constants.SET_DIGITAL_FILTER_COMMAND + filter);
+        FileUtils.writeLine(Constants.ESS_FILTER_SYSFS, filter + "");
+        SystemProperties.set(Constants.PROPERTY_DIGITAL_FILTER, Integer.toString(filter));
+        if(filter == 3) { /* Custom filter */
+            /*
+            * If it's a custom filter, we need to apply its settings. Any of the functions
+            * below should suffice since it'll load all settings from memory by parsing its
+            * data.
+            */
+            setCustomFilterShape(getCustomFilterShape());
         }
     }
 
