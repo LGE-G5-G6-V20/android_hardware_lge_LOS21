@@ -29,12 +29,12 @@ public class Constants {
 
     public static final String   PROPERTY_ESS_MODE = "persist.audio.ess.mode";
     public static final String   PROPERTY_ESS_STATUS = "persist.audio.hifi.enabled";
-    public static final String   PROPERTY_DIGITAL_FILTER = "persist.vendor.lge.audio.hifi_dac.digitalFilter"; // not yet implemented in audio hal
-    public static final String   PROPERTY_LEFT_BALANCE = "persist.vendor.lge.audio.hifi_dac.left_balance"; // not yet implemented in audio hal
-    public static final String   PROPERTY_RIGHT_BALANCE = "persist.vendor.lge.audio.hifi_dac.right_balance"; // not yet implemented in audio hal
-    public static final String   PROPERTY_HIFI_DAC_DOP = "persist.vendor.lge.audio.hifi_dac.dop"; // not yet implemented in audio hal
-    public static final String   PROPERTY_HIFI_DAC_MODE = "persist.vendor.lge.audio.hifi_dac.mode"; // not yet implemented in audio hal
-    public static final String   PROPERTY_HIFI_DAC_AVC_VOLUME = "persist.vendor.lge.audio.hifi_dac.avc_volume"; // not yet implemented in audio hal
+    public static final String   PROPERTY_DIGITAL_FILTER = "persist.audio.ess.digitalFilter"; // not yet implemented in audio hal
+    public static final String   PROPERTY_LEFT_BALANCE = "persist.audio.ess.left_balance"; // not yet implemented in audio hal
+    public static final String   PROPERTY_RIGHT_BALANCE = "persist.audio.ess.right_balance"; // not yet implemented in audio hal
+    public static final String   PROPERTY_HIFI_DAC_DOP = "persist.audio.ess.dop"; // not yet implemented in audio hal
+    public static final String   PROPERTY_HIFI_DAC_MODE = "persist.audio.ess.dacmode"; // not yet implemented in audio hal
+    public static final String   PROPERTY_HIFI_DAC_AVC_VOLUME = "persist.audio.ess.avc_volume"; // not yet implemented in audio hal
     public static final String   PROPERTY_CUSTOM_FILTER_SHAPE = "persist.audio.ess.customFilterShape";
     public static final String   PROPERTY_CUSTOM_FILTER_SYMMETRY = "persist.audio.ess.customFilterSymmetry";
     public static final String[] PROPERTY_CUSTOM_FILTER_COEFFS = { "persist.audio.ess.customFilterCoeff0", "persist.audio.ess.customFilterCoeff1",
