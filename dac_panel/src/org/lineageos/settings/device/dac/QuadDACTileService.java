@@ -24,11 +24,9 @@ public class QuadDACTileService extends TileService {
 
         if(QuadDAC.isEnabled()) {
             QuadDAC.disable();
-            /* TODO: Reconfigure routes here */
             setTileInactive();
         } else {
             QuadDAC.enable();
-            /* TODO: Reconfigure routes here */
             setTileActive();
         }
 
@@ -50,10 +48,8 @@ public class QuadDACTileService extends TileService {
         }
 	
         if(QuadDAC.isEnabled()) {
-            /* TODO: Reconfigure routes here */
             setTileActive();
         } else {
-            /* TODO: Reconfigure routes here */
             setTileInactive();
         }
     }
@@ -103,10 +99,8 @@ public class QuadDACTileService extends TileService {
                 {
                     case 1: // Headset plugged in
                         if(QuadDAC.isEnabled()) {
-                            /* TODO: Reconfigure routes here */
                             setTileActive();
                         } else {
-                            /* TODO: Reconfigure routes here */
                             setTileInactive();
                         }
                         break;

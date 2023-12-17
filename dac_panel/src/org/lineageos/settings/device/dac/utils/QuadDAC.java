@@ -2,7 +2,6 @@ package org.lineageos.settings.device.dac.utils;
 
 import android.media.AudioSystem;
 import android.os.SystemProperties;
-import android.util.Log;
 
 import org.lineageos.hardware.util.FileUtils;
 
