@@ -43,6 +43,7 @@ public class QuadDAC {
         for(i = 0; i < 14; i++) {
             setCustomFilterCoeff(i, custom_filter_coefficients[i]);
         }
+        applyCustomFilterCoeffs();
     }
 
     public static void disable()
@@ -137,13 +138,21 @@ public class QuadDAC {
         return SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_SYMMETRY, 0);
     }
 
+    /* 
+     * This method should not write to sysfs on its own, as it can be called multiple times in sequence.
+     * 
+     * Use "applyCustomFilterCoeffs" instead whenever you want to apply them all at once. 
+     */
     public static void setCustomFilterCoeff(int coeffIndex, int coeff_val) {
         SystemProperties.set(Constants.PROPERTY_CUSTOM_FILTER_COEFFS[coeffIndex], Integer.toString(coeff_val));
-        FileUtils.writeLine(Constants.ESS_CUSTOM_FILTER_SYSFS, parseUpdatedCustomFilterData());
     }
 
     public static int getCustomFilterCoeff(int coeffIndex) {
         return SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_COEFFS[coeffIndex], 0);
+    }
+
+    public static void applyCustomFilterCoeffs() {
+        FileUtils.writeLine(Constants.ESS_CUSTOM_FILTER_SYSFS, parseUpdatedCustomFilterData());
     }
 
     public static void setLeftBalance(int balance)
@@ -187,10 +196,7 @@ public class QuadDAC {
     private static String parseUpdatedCustomFilterData() {
         StringBuilder temp_string = new StringBuilder();
 
-        /*
-         * Let's build the actual string with the custom filter's shape, symmetry and 14 Stage 2 coefficients
-         *
-         */
+        /* Let's build the actual string with the custom filter's shape, symmetry and 14 Stage 2 coefficients */
         temp_string.append(SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_SHAPE, 0)).append(",");
         temp_string.append(SystemProperties.getInt(Constants.PROPERTY_CUSTOM_FILTER_SYMMETRY, 0)).append(",");
         for(int i = 0; i < 14; i++) {

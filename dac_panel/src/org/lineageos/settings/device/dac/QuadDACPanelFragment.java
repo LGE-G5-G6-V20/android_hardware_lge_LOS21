@@ -145,6 +145,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
                             setCoeffSummary(i, coeffVal);
 
                             QuadDAC.setCustomFilterCoeff(i, coeffVal);
+                            QuadDAC.applyCustomFilterCoeffs();
                             return true;
                         } else
                             return false;

@@ -59,6 +59,7 @@ public class ButtonPreference extends Preference {
     {
         for(int i = 0; i < 14; i++){
             QuadDAC.setCustomFilterCoeff(i, 0);
+            QuadDAC.applyCustomFilterCoeffs();
             QuadDACPanelFragment.setCoeffSummary(i, 0);
         }
     }
