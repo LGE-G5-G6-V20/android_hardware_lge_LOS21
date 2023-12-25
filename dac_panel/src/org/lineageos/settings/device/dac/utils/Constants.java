@@ -29,6 +29,7 @@ public class Constants {
 
     public static final String   PROPERTY_ESS_MODE = "persist.audio.ess.mode";
     public static final String   PROPERTY_ESS_STATUS = "persist.audio.hifi.enabled";
+    public static final String   PROPERTY_ESS_ACTUAL_STATUS = "persist.audio.ess.status";
     public static final String   PROPERTY_DIGITAL_FILTER = "persist.audio.ess.digitalFilter";
     public static final String   PROPERTY_LEFT_BALANCE = "persist.audio.ess.left_balance";
     public static final String   PROPERTY_RIGHT_BALANCE = "persist.audio.ess.right_balance";

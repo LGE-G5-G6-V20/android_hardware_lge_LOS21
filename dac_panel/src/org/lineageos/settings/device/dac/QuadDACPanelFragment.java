@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.Handler;
+import android.os.SystemProperties;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragment;
@@ -18,6 +22,8 @@ import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 import org.lineageos.settings.device.dac.ui.BalancePreference;
 import org.lineageos.settings.device.dac.ui.ButtonPreference;
@@ -45,11 +51,24 @@ public class QuadDACPanelFragment extends PreferenceFragment
     /* Button to reset custom filter's coefficients, if needed. */
     private ButtonPreference custom_filter_reset_coeffs_button;
 
+    /* We'll use a notification audio playback to kickstart the dac setup processes */
+    private MediaPlayer notificationPlayer;
+    private Boolean playerPrepared = false;
+    private Handler handler;
+    private Runnable playNotifCueRunnable;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.quaddac_panel);
         headsetPluggedFragmentReceiver = new HeadsetPluggedFragmentReceiver();
+        /* Get the standard notification jingle from android to be used as the DAC trigger */
+        notificationPlayer = new MediaPlayer();
+        try {
+            notificationPlayer.setDataSource(getContext(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        } catch(IOException e) {
+
+        }
+        
     }
 
     @Override
@@ -62,12 +81,14 @@ public class QuadDACPanelFragment extends PreferenceFragment
             if (set_dac_on) {
                 QuadDAC.enable();
                 enableExtraSettings();
-                Toast.makeText(getActivity(), Html.fromHtml("<b>Pause playback for a few seconds to apply!</b>") ,Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), Html.fromHtml("<b>Enabling DAC... pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
+                handler.postDelayed(playNotifCueRunnable, 5000);
                 return true;
             } else {
                 QuadDAC.disable();
                 disableExtraSettings();
-                Toast.makeText(getActivity(), Html.fromHtml("<b>Pause playback for a few seconds to apply!</b>") ,Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), Html.fromHtml("<b>Disabling DAC... pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
+                handler.postDelayed(playNotifCueRunnable, 5000);
                 return true;
             }
 
@@ -81,7 +102,8 @@ public class QuadDACPanelFragment extends PreferenceFragment
                 int mode = lp.findIndexOfValue((String) newValue);
                 QuadDAC.setDACMode(mode);
 
-                Toast.makeText(getActivity(), Html.fromHtml("<b>Pause playback for a few seconds to apply!</b>") ,Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), Html.fromHtml("<b>Setting up HIFI Mode... Pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
+                handler.postDelayed(playNotifCueRunnable, 5000);
                 return true;
 
             } else if(preference.getKey().equals(Constants.DIGITAL_FILTER_KEY))
@@ -167,6 +189,69 @@ public class QuadDACPanelFragment extends PreferenceFragment
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         getActivity().registerReceiver(headsetPluggedFragmentReceiver, filter);
         super.onResume();
+
+        /* 
+         * Hacky workaround for the ESS DAC on AOSP audio hal:
+         * 
+         * Since we can't get the DAC status without issuing a media playback beforehand,
+         * play a small notification stream in order to get what we need, or else there
+         * will be no way to know when the DAC is actually ready to apply the panel's 
+         * settings.
+         */
+        handler = new Handler();
+        playNotifCueRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    /* Only prepare the player once */
+                    if(!playerPrepared) {
+                        notificationPlayer.prepare();
+                        playerPrepared = true;
+                    }
+                    /* 
+                     * Remove the runnable callback in order to potentially schedule it again if
+                     * the dac setup fails.
+                     */
+                    handler.removeCallbacks(playNotifCueRunnable);
+                    notificationPlayer.start();
+                } catch(IOException e) {
+
+                }
+            }
+        };
+
+        /* After the media has completed playing, we can ascertain the DAC's status */
+        notificationPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+
+                /* 
+                 * We must check for the following conditions after the notification tone is played:
+                 * 
+                 * 1 - Both the expected and actual status are true (dac has been enabled successfully)
+                 * 2 - Expected status is true but actual status is false (dac couldn't be enabled)
+                 * 3 - Both the expected and actual status are false (dac has been disabled successfully)
+                 * 4 - Expected status is false but actual status is true (dac couldn't be disabled)
+                 * 
+                 * 2 and 4 are failure states, so we must try again and notify the user about it.
+                 */
+                if(SystemProperties.get(Constants.PROPERTY_ESS_ACTUAL_STATUS).equals("true") && SystemProperties.get(Constants.PROPERTY_ESS_STATUS).equals("true")) {
+                    QuadDAC.enabledSetup();
+                    Toast.makeText(getActivity(), Html.fromHtml("<font color='#00AA00'><b>DAC IS READY!!!</b>") ,Toast.LENGTH_LONG).show();
+                }
+                else if(SystemProperties.get(Constants.PROPERTY_ESS_ACTUAL_STATUS).equals("false") && SystemProperties.get(Constants.PROPERTY_ESS_STATUS).equals("true")){
+                    Toast.makeText(getActivity(), Html.fromHtml("<font color='#BB0000'><b>DAC NOT READY!!! Trying again...</b>") ,Toast.LENGTH_LONG).show();
+                    handler.postDelayed(playNotifCueRunnable, 5000);
+                }
+                else if(SystemProperties.get(Constants.PROPERTY_ESS_ACTUAL_STATUS).equals("false") && SystemProperties.get(Constants.PROPERTY_ESS_STATUS).equals("false")) {
+                    Toast.makeText(getActivity(), Html.fromHtml("<font color='#00AA00'><b>DAC DISABLED SUCCESSFULLY!!!</b>") ,Toast.LENGTH_LONG).show();
+                }
+                else if(SystemProperties.get(Constants.PROPERTY_ESS_ACTUAL_STATUS).equals("true") && SystemProperties.get(Constants.PROPERTY_ESS_STATUS).equals("false")) {
+                    Toast.makeText(getActivity(), Html.fromHtml("<font color='#BB0000'><b>DAC NOT DISABLED!!! Trying again...</b>") ,Toast.LENGTH_LONG).show();
+                    handler.postDelayed(playNotifCueRunnable, 5000);
+                }
+            }
+        });
     }
 
     @Override
