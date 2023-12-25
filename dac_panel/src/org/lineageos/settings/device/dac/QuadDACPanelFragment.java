@@ -57,6 +57,9 @@ public class QuadDACPanelFragment extends PreferenceFragment
     private Handler handler;
     private Runnable playNotifCueRunnable;
 
+    /* Used to get the state of wired headset connection, and media playback */
+    private AudioManager audioManager;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.quaddac_panel);
@@ -202,20 +205,27 @@ public class QuadDACPanelFragment extends PreferenceFragment
         playNotifCueRunnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    /* Only prepare the player once */
-                    if(!playerPrepared) {
-                        notificationPlayer.prepare();
-                        playerPrepared = true;
+                if(audioManager.isMusicActive()) {
+                    /* Media playback is still active, notify the user and post another job */
+                    Toast.makeText(getActivity(), Html.fromHtml("<font color='#BB0000'><b>Media playback detected! Did you pause it as requested? Trying again...</b>") ,Toast.LENGTH_LONG).show();
+                    handler.postDelayed(playNotifCueRunnable, 5000);
+                }
+                else {
+                    try {
+                        /* Only prepare the player once */
+                        if(!playerPrepared) {
+                            notificationPlayer.prepare();
+                            playerPrepared = true;
+                        }
+                        /* 
+                         * Remove the runnable callback in order to potentially schedule it again if
+                         * the dac setup fails.
+                         */
+                        handler.removeCallbacks(playNotifCueRunnable);
+                        notificationPlayer.start();
+                    } catch(IOException e) {
+    
                     }
-                    /* 
-                     * Remove the runnable callback in order to potentially schedule it again if
-                     * the dac setup fails.
-                     */
-                    handler.removeCallbacks(playNotifCueRunnable);
-                    notificationPlayer.start();
-                } catch(IOException e) {
-
                 }
             }
         };
@@ -264,7 +274,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
     public void addPreferencesFromResource(int preferencesResId) {
         super.addPreferencesFromResource(preferencesResId);
         // Initialize preferences
-        AudioManager am = getContext().getSystemService(AudioManager.class);
+        audioManager = getContext().getSystemService(AudioManager.class);
 
         quaddac_switch = (SwitchPreference) findPreference(Constants.DAC_SWITCH_KEY);
         quaddac_switch.setOnPreferenceChangeListener(this);
@@ -297,7 +307,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
 
         balance_preference = (BalancePreference) findPreference(Constants.BALANCE_KEY);
 
-        if(am.isWiredHeadsetOn()) {
+        if(audioManager.isWiredHeadsetOn()) {
             quaddac_switch.setEnabled(true);
             if(QuadDAC.isEnabled())
             {
