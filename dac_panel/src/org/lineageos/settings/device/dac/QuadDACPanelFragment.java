@@ -56,6 +56,8 @@ public class QuadDACPanelFragment extends PreferenceFragment
     private Boolean playerPrepared = false;
     private Handler handler;
     private Runnable playNotifCueRunnable;
+    /* Keeps track of changes that require media playback to be paused. */
+    private Boolean changeInProgress = false;
 
     /* Used to get the state of wired headset connection, and media playback */
     private AudioManager audioManager;
@@ -78,21 +80,26 @@ public class QuadDACPanelFragment extends PreferenceFragment
     public boolean onPreferenceChange(Preference preference, Object newValue) {
 
         if(preference instanceof SwitchPreference) {
+            if(!changeInProgress) {
+                boolean set_dac_on = (boolean) newValue;
 
-            boolean set_dac_on = (boolean) newValue;
-
-            if (set_dac_on) {
-                QuadDAC.enable();
-                enableExtraSettings();
-                Toast.makeText(getActivity(), Html.fromHtml("<b>Enabling DAC... pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
-                handler.postDelayed(playNotifCueRunnable, 5000);
-                return true;
+                if (set_dac_on) {
+                    QuadDAC.enable();
+                    enableExtraSettings();
+                    Toast.makeText(getActivity(), Html.fromHtml("<b>Enabling DAC... pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
+                    changeInProgress = true;
+                    handler.postDelayed(playNotifCueRunnable, 5000);
+                    return true;
+                } else {
+                    QuadDAC.disable();
+                    disableExtraSettings();
+                    Toast.makeText(getActivity(), Html.fromHtml("<b>Disabling DAC... pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
+                    changeInProgress = true;
+                    handler.postDelayed(playNotifCueRunnable, 5000);
+                    return true;
+                }
             } else {
-                QuadDAC.disable();
-                disableExtraSettings();
-                Toast.makeText(getActivity(), Html.fromHtml("<b>Disabling DAC... pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
-                handler.postDelayed(playNotifCueRunnable, 5000);
-                return true;
+                return false;
             }
 
         }
@@ -100,14 +107,20 @@ public class QuadDACPanelFragment extends PreferenceFragment
         {
             if(preference.getKey().equals(Constants.HIFI_MODE_KEY))
             {
-                ListPreference lp = (ListPreference) preference;
+                if(!changeInProgress) {
+                    ListPreference lp = (ListPreference) preference;
 
-                int mode = lp.findIndexOfValue((String) newValue);
-                QuadDAC.setDACMode(mode);
+                    int mode = lp.findIndexOfValue((String) newValue);
+                    QuadDAC.setDACMode(mode);
 
-                Toast.makeText(getActivity(), Html.fromHtml("<b>Setting up HIFI Mode... Pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
-                handler.postDelayed(playNotifCueRunnable, 5000);
-                return true;
+                    Toast.makeText(getActivity(), Html.fromHtml("<b>Setting up HIFI Mode... Pause all media playback for a few seconds and do not leave this panel.</b>") ,Toast.LENGTH_LONG).show();
+                    changeInProgress = true;
+                    handler.postDelayed(playNotifCueRunnable, 5000);
+                    return true;
+                } else {
+                    return false;
+                }
+                
 
             } else if(preference.getKey().equals(Constants.DIGITAL_FILTER_KEY))
             {
@@ -223,6 +236,8 @@ public class QuadDACPanelFragment extends PreferenceFragment
                          */
                         handler.removeCallbacks(playNotifCueRunnable);
                         notificationPlayer.start();
+                        /* Change that requires user to pause media playback were done, so clear its variable */
+                        changeInProgress = false;
                     } catch(IOException e) {
     
                     }
@@ -251,6 +266,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
                 }
                 else if(SystemProperties.get(Constants.PROPERTY_ESS_ACTUAL_STATUS).equals("false") && SystemProperties.get(Constants.PROPERTY_ESS_STATUS).equals("true")){
                     Toast.makeText(getActivity(), Html.fromHtml("<font color='#BB0000'><b>DAC NOT READY!!! Trying again...</b>") ,Toast.LENGTH_LONG).show();
+                    changeInProgress = true;
                     handler.postDelayed(playNotifCueRunnable, 5000);
                 }
                 else if(SystemProperties.get(Constants.PROPERTY_ESS_ACTUAL_STATUS).equals("false") && SystemProperties.get(Constants.PROPERTY_ESS_STATUS).equals("false")) {
@@ -258,6 +274,7 @@ public class QuadDACPanelFragment extends PreferenceFragment
                 }
                 else if(SystemProperties.get(Constants.PROPERTY_ESS_ACTUAL_STATUS).equals("true") && SystemProperties.get(Constants.PROPERTY_ESS_STATUS).equals("false")) {
                     Toast.makeText(getActivity(), Html.fromHtml("<font color='#BB0000'><b>DAC NOT DISABLED!!! Trying again...</b>") ,Toast.LENGTH_LONG).show();
+                    changeInProgress = true;
                     handler.postDelayed(playNotifCueRunnable, 5000);
                 }
             }
