@@ -20,16 +20,13 @@
     <string name="digital_filter_2">Sine phase fast roll-off</string>
     <string name="digital_filter_3">Customizable Filter</string>
     <string name="digital_filter_4">Linear phase fast roll-off</string>
-    <!-- Workaround below for a random issue that sets the panel's name to digital_filter_5 -->
-    <string name="digital_filter_5">Quad DAC Panel</string> <!-- Linear phase slow roll-off-->
+    <string name="digital_filter_5">Linear phase slow roll-off</string>
     <string name="digital_filter_6">Minimum phase fast roll-off</string>
     <string name="digital_filter_7">Minimum phase slow roll-off</string>
     <string name="digital_filter_8">Apodizing fast roll-off 1</string>
     <string name="digital_filter_9">Apodizing fast roll-off 2</string>
     <string name="digital_filter_10">Hybrid fast roll-off</string>
     <string name="digital_filter_11">Brick wall</string>
-
-    <string name="empty_string"></string>
 
     <string name="customizable_filter_settings">Customizable Filter Settings</string>
 
@@ -49,6 +46,7 @@
     <string name="cf_symmetry_1">Cosine Symmetry</string>
 
     <string name="customizable_filter_coeffs">Customizable Filter Coefficients</string>
+    <string name="customizable_filter_coeffs_summary">NOTE: If all coefficients are 0, audio will be muted</string>
 
     <string name="hifi_mode">HiFi mode</string>
 
