@@ -10,10 +10,13 @@ import android.service.quicksettings.TileService;
 import android.util.Log;
 
 import org.lineageos.settings.device.dac.utils.QuadDAC;
+import org.lineageos.settings.device.dac.QuadDACPanelActivity;
 
 public class QuadDACTileService extends TileService {
 
     private final static String TAG = "QuadDACTileService";
+
+    private Tile quaddactile;
 
     private HeadsetPluggedTileReceiver headsetPluggedTileReceiver = new HeadsetPluggedTileReceiver();
 
@@ -22,20 +25,17 @@ public class QuadDACTileService extends TileService {
     {
         super.onClick();
 
-        if(QuadDAC.isEnabled()) {
-            QuadDAC.disable();
-            setTileInactive();
-        } else {
-            QuadDAC.enable();
-            setTileActive();
-        }
-
+        Intent intent = new Intent(this, QuadDACPanelActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivityAndCollapse(intent);
     }
 
     @Override
     public void onStartListening()
     {
         super.onStartListening();
+
+        quaddactile = getQsTile();
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(headsetPluggedTileReceiver, filter);
@@ -64,9 +64,6 @@ public class QuadDACTileService extends TileService {
 
     private void setTileActive()
     {
-        Tile quaddactile = getQsTile();
-
-        QuadDAC.enabledSetup();
         quaddactile.setState(Tile.STATE_ACTIVE);
         quaddactile.setLabel(getResources().getString(R.string.quad_dac_on));
 	    quaddactile.updateTile();
@@ -74,7 +71,6 @@ public class QuadDACTileService extends TileService {
 
     private void setTileInactive()
     {
-        Tile quaddactile = getQsTile();
         quaddactile.setState(Tile.STATE_INACTIVE);
         quaddactile.setLabel(getResources().getString(R.string.quad_dac_off));
 	    quaddactile.updateTile();
@@ -82,7 +78,6 @@ public class QuadDACTileService extends TileService {
 
     private void setTileUnavailable()
     {
-        Tile quaddactile = getQsTile();
         quaddactile.setState(Tile.STATE_UNAVAILABLE);
         quaddactile.setLabel(getResources().getString(R.string.quad_dac_unavail));
 	    quaddactile.updateTile();
