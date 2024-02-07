@@ -110,6 +110,7 @@ class DacControl : public IDacControl {
     std::string volumeRightPath;
     std::string essFilterPath;
     std::string customFilterPath;
+    std::string bypassModePath;
 };
 
 }  // namespace implementation

@@ -87,6 +87,8 @@ DacControl::DacControl() {
     essFilterPath.append(ESS_FILTER);
     customFilterPath = std::string(COMMON_ES9218_PATH);
     customFilterPath.append(ESS_CUSTOM_FILTER);
+    bypassModePath = std::string(COMMON_ES9218_PATH);
+    bypassModePath.append(BYPASS_MODE);
 
 #ifdef PROPRIETARY_AUDIO_MODULE
     mAudioDevicesFactory_V6_0 = ::android::hardware::audio::V6_0::IDevicesFactory::getService();
@@ -202,6 +204,10 @@ DacControl::DacControl() {
     /* Quad DAC */
     mSupportedFeatures.push_back(Feature::QuadDAC);
     setHifiDacState(getHifiDacState());
+    if(stat(bypassModePath.c_str(), &buffer) != 0) {
+        LOG(ERROR) << "Quad DAC not supported";
+        return; // should never reach this point
+    }
 
     /* Digital Filter */
     if(stat(essFilterPath.c_str(), &buffer) == 0) {
@@ -389,6 +395,9 @@ Return<bool> DacControl::setHifiDacState(bool enable) {
     kv.value = enable ? SET_DAC_ON_COMMAND : SET_DAC_OFF_COMMAND;
     return setAudioHALParameters(kv);
 #else
+    // Bypass mode is where no filters are applied and passes through
+    // Disabling bypass mode == enabling Hi-Fi mode
+    set(bypassModePath, enable ? 0 : 1);
     return (bool)property_set(PROPERTY_HIFI_DAC_ENABLED, enable ? PROPERTY_VALUE_HIFI_DAC_ENABLED : PROPERTY_VALUE_HIFI_DAC_DISABLED);
 #endif
 }

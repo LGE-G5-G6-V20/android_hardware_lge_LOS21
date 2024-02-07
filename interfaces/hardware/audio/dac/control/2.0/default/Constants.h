@@ -27,6 +27,7 @@
 #define HIFI_MODE                          "headset_type"
 #define ESS_FILTER                         "ess_filter"
 #define ESS_CUSTOM_FILTER                  "ess_custom_filter"
+#define BYPASS_MODE                        "bypass_mode"
 
 /* Properties */
 #ifndef PROPRIETARY_AUDIO_MODULE
