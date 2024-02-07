@@ -7115,6 +7115,44 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
         }
     }
 
+/* LINEAGEOS LGE CHANGES START */
+// Add code to enable the Hi-Fi Quad DAC feature
+    ret = str_parms_get_str(parms, "hifi_dac", value, sizeof(value));
+    if (ret >= 0) {
+        struct audio_usecase *usecase;
+        struct listnode *node;
+        list_for_each(node, &adev->usecase_list) {
+            usecase = node_to_item(node, struct audio_usecase, list);
+            if ((usecase->type == PCM_PLAYBACK) &&
+                (usecase->devices & AUDIO_DEVICE_OUT_WIRED_HEADSET)){
+
+                if(!strncmp(value, "on", 2)) {
+                    ALOGD("Enabling Hi-Fi Quad DAC.");
+                    property_set("persist.vendor.audio.hifi.enabled", "true");
+                }
+                else if(!strncmp(value, "off", 3)) {
+                    ALOGD("Disabling Hi-Fi Quad DAC.");
+                    property_set("persist.vendor.audio.hifi.enabled", "false");
+                }
+                else {
+                    status = -EINVAL;
+                    goto done;
+                }
+
+                pthread_mutex_unlock(&adev->lock);
+                lock_output_stream(usecase->stream.out);
+                pthread_mutex_lock(&adev->lock);
+                audio_extn_a2dp_set_handoff_mode(true);
+                //force device switch to re configure encoder
+                select_devices(adev, usecase->id);
+                audio_extn_a2dp_set_handoff_mode(false);
+                pthread_mutex_unlock(&usecase->stream.out->lock);
+                break;
+            }
+        }
+    }
+/* LINEAGEOS LGE CHANGES END */
+
     amplifier_set_parameters(parms);
     audio_extn_set_parameters(adev, parms);
 done:
