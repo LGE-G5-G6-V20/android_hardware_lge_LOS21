@@ -996,26 +996,26 @@ static void check_and_enable_ess_hifi(struct audio_device *adev, struct audio_us
                 {
                 case 0:
                     usecase->out_snd_device = SND_DEVICE_OUT_HEADPHONES_HIFI_DAC;
-                    audio_route_apply_and_update_path(adev->audio_route, "ess-headphones-hifi");
+                    audio_route_apply_and_update_path(adev->audio_route, "headphones-hifi-dac");
                     ALOGD("%s: Setting ESS hifi mode \n", __func__);
                     break;
                 case 1:
                     usecase->out_snd_device = SND_DEVICE_OUT_HEADPHONES_HIFI_DAC_ADVANCED;
-                    audio_route_apply_and_update_path(adev->audio_route, "ess-headphones-hifi-advanced");
+                    audio_route_apply_and_update_path(adev->audio_route, "headphones-hifi-dac-advanced");
                     ALOGD("%s: Setting advanced ESS hifi mode \n", __func__);
                     break;
                 case 2:
                     usecase->out_snd_device = SND_DEVICE_OUT_HEADPHONES_HIFI_DAC_AUX;
-                    audio_route_apply_and_update_path(adev->audio_route, "ess-headphones-hifi-aux");
+                    audio_route_apply_and_update_path(adev->audio_route, "headphones-hifi-dac-aux");
                     ALOGD("%s: Setting aux ESS hifi mode \n", __func__);
                     break;
                 default:
                     usecase->out_snd_device = SND_DEVICE_OUT_HEADPHONES_HIFI_DAC;
-                    audio_route_apply_and_update_path(adev->audio_route, "ess-headphones-hifi");
+                    audio_route_apply_and_update_path(adev->audio_route, "headphones-hifi-dac");
                     ALOGE("%s: INVALID ESS MODE... Using normal ess route.\n", __func__);
                 }
                 property_set("persist.vendor.audio.ess.status","true");
-                platform_set_snd_device_backend(usecase->out_snd_device, "headphones tert-mi2s-headphones", "SEC_MI2S_RX");
+                platform_set_snd_device_backend(usecase->out_snd_device, "QUAT_MI2S_RX", "QUAT_MI2S_RX");
             }
             enable_snd_device(adev, usecase->out_snd_device);
         }
